@@ -4,6 +4,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
 export function signUp(email: string, password: string) {
@@ -20,4 +21,8 @@ export function logOut() {
 
 export function listenAuth(callback: (uid: string | null) => void) {
   return onAuthStateChanged(auth, (user) => callback(user?.uid ?? null));
+}
+
+export function resetPassword(email: string) {
+  return sendPasswordResetEmail(auth, email);
 }
