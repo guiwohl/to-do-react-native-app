@@ -1,16 +1,8 @@
 import { FirebaseError } from "firebase/app";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../src/providers/auth-provider";
 
 function formatError(err: unknown) {
@@ -66,7 +58,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -74,10 +66,10 @@ export default function ForgotPasswordScreen() {
       >
         <View style={{ flex: 1, padding: 24, gap: 16, justifyContent: "center" }}>
           <View>
-            <Text style={{ fontSize: 28, fontWeight: "700", color: "#111" }}>
+            <Text style={{ fontSize: 30, fontWeight: "800", color: "#e2e8f0" }}>
               Reset password
             </Text>
-            <Text style={{ marginTop: 4, color: "#555" }}>
+            <Text style={{ marginTop: 6, color: "#cbd5e1" }}>
               Enter your account email to receive a reset link.
             </Text>
           </View>
@@ -91,35 +83,41 @@ export default function ForgotPasswordScreen() {
             autoComplete="email"
             style={{
               borderWidth: 1,
-              borderColor: "#d1d5db",
+              borderColor: "#334155",
               borderRadius: 10,
               paddingHorizontal: 14,
-            paddingVertical: 12,
-          }}
-        />
+              paddingVertical: 12,
+              backgroundColor: "#0b1221",
+              color: "#e2e8f0",
+            }}
+            placeholderTextColor="#64748b"
+          />
 
-          {sentMessage ? <Text style={{ color: "#065f46" }}>{sentMessage}</Text> : null}
-          {error ? <Text style={{ color: "#b91c1c" }}>{error}</Text> : null}
+          {sentMessage ? <Text style={{ color: "#22c55e" }}>{sentMessage}</Text> : null}
+          {error ? <Text style={{ color: "#f87171" }}>{error}</Text> : null}
 
           <TouchableOpacity
             onPress={handleSubmit}
             disabled={submitting}
             style={{
-              backgroundColor: submitting ? "#9ca3af" : "#111827",
+              backgroundColor: submitting ? "#1e293b" : "#22c55e",
               paddingVertical: 14,
               borderRadius: 10,
               alignItems: "center",
+              shadowColor: "#22c55e",
+              shadowOpacity: 0.3,
+              shadowRadius: 6,
             }}
           >
             {submitting ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="#0f172a" />
             ) : (
-              <Text style={{ color: "#fff", fontWeight: "700" }}>Send reset link</Text>
+              <Text style={{ color: "#0f172a", fontWeight: "800" }}>Send reset link</Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => router.back()}>
-            <Text style={{ color: "#111827", fontWeight: "600" }}>Back to sign in</Text>
+            <Text style={{ color: "#38bdf8", fontWeight: "700" }}>Back to sign in</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

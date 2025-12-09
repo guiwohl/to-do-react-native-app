@@ -1,15 +1,7 @@
-import { useRouter } from "expo-router";
 import { FirebaseError } from "firebase/app";
+import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../src/providers/auth-provider";
 
@@ -38,11 +30,24 @@ export default function SignInScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const isValidEmail = (value: string) => /\S+@\S+\.\S+/.test(value);
+  const isValidPassword = (value: string) => value.length >= 6;
+
   const handleSubmit = async () => {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    if (!isValidPassword(password)) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     try {
-      await signInWithEmail(email.trim(), password);
+      await signInWithEmail(trimmedEmail, password);
       router.replace("/");
     } catch (err) {
       setError(formatError(err));
@@ -51,8 +56,10 @@ export default function SignInScreen() {
     }
   };
 
+  const isDisabled = submitting || !isValidEmail(email.trim()) || !isValidPassword(password);
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -60,10 +67,10 @@ export default function SignInScreen() {
       >
         <View style={{ flex: 1, padding: 24, gap: 16, justifyContent: "center" }}>
           <View>
-            <Text style={{ fontSize: 28, fontWeight: "700", color: "#111" }}>
+            <Text style={{ fontSize: 30, fontWeight: "800", color: "#e2e8f0" }}>
               Welcome back
             </Text>
-            <Text style={{ marginTop: 4, color: "#555" }}>
+            <Text style={{ marginTop: 6, color: "#cbd5e1" }}>
               Sign in to see your tasks.
             </Text>
           </View>
@@ -78,11 +85,14 @@ export default function SignInScreen() {
               autoComplete="email"
               style={{
                 borderWidth: 1,
-                borderColor: "#d1d5db",
+                borderColor: "#334155",
                 borderRadius: 10,
                 paddingHorizontal: 14,
                 paddingVertical: 12,
+                backgroundColor: "#0b1221",
+                color: "#e2e8f0",
               }}
+              placeholderTextColor="#64748b"
             />
             <TextInput
               value={password}
@@ -91,41 +101,47 @@ export default function SignInScreen() {
               secureTextEntry
               style={{
                 borderWidth: 1,
-                borderColor: "#d1d5db",
+                borderColor: "#334155",
                 borderRadius: 10,
                 paddingHorizontal: 14,
                 paddingVertical: 12,
+                backgroundColor: "#0b1221",
+                color: "#e2e8f0",
               }}
+              placeholderTextColor="#64748b"
             />
           </View>
 
-          {error ? <Text style={{ color: "#b91c1c" }}>{error}</Text> : null}
+          {error ? <Text style={{ color: "#f87171" }}>{error}</Text> : null}
 
           <TouchableOpacity
             onPress={handleSubmit}
-            disabled={submitting}
+            disabled={isDisabled}
             style={{
-              backgroundColor: submitting ? "#9ca3af" : "#111827",
+              backgroundColor: isDisabled ? "#1e293b" : "#22c55e",
               paddingVertical: 14,
               borderRadius: 10,
               alignItems: "center",
+              shadowColor: "#22c55e",
+              shadowOpacity: 0.3,
+              shadowRadius: 6,
             }}
           >
             {submitting ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="#0f172a" />
             ) : (
-              <Text style={{ color: "#fff", fontWeight: "700" }}>Sign in</Text>
+              <Text style={{ color: "#0f172a", fontWeight: "800" }}>Sign in</Text>
             )}
           </TouchableOpacity>
 
           <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
             <TouchableOpacity onPress={() => router.push("/sign-up")}>
-              <Text style={{ color: "#111827", fontWeight: "600" }}>
+              <Text style={{ color: "#38bdf8", fontWeight: "700" }}>
                 Create account
               </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/forgot-password")}>
-              <Text style={{ color: "#111827" }}>Forgot password?</Text>
+              <Text style={{ color: "#cbd5e1" }}>Forgot password?</Text>
             </TouchableOpacity>
           </View>
         </View>

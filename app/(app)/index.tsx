@@ -9,10 +9,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { addTask, listenTasks, removeTask, toggleTask } from "../../src/lib/tasks";
 import { useAuth } from "../../src/providers/auth-provider";
-import { SafeAreaView } from "react-native-safe-area-context";
-  
+
 type Task = {
   id: string;
   title: string;
@@ -27,6 +27,7 @@ export default function HomeScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [signingOut, setSigningOut] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   useEffect(() => {
     if (!uid) return;
@@ -37,6 +38,33 @@ export default function HomeScreen() {
     });
     return unsubscribe;
   }, [uid]);
+
+  const palette =
+    theme === "dark"
+      ? {
+          bg: "#0f172a",
+          card: "#111827",
+          border: "#1f2937",
+          text: "#e2e8f0",
+          muted: "#cbd5e1",
+          primary: "#22c55e",
+          danger: "#f87171",
+          accent: "#38bdf8",
+          checkBorder: "#22c55e",
+          checkBg: "#064e3b",
+        }
+      : {
+          bg: "#f8fafc",
+          card: "#ffffff",
+          border: "#e2e8f0",
+          text: "#0f172a",
+          muted: "#475569",
+          primary: "#0ea5e9",
+          danger: "#dc2626",
+          accent: "#0ea5e9",
+          checkBorder: "#10b981",
+          checkBg: "#d1fae5",
+        };
 
   const sortedTasks = useMemo(
     () => tasks.slice().sort((a, b) => a.title.localeCompare(b.title)),
@@ -108,16 +136,33 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: palette.bg }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={24}
       >
         <View style={{ flex: 1, padding: 24, gap: 16 }}>
-          <View>
-            <Text style={{ fontSize: 28, fontWeight: "700", color: "#111" }}>Tasks</Text>
-            <Text style={{ color: "#4b5563" }}>Signed in as {uid}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+            <View>
+              <Text style={{ fontSize: 28, fontWeight: "800", color: palette.text }}>Tasks</Text>
+              <Text style={{ color: palette.muted }}>Signed in as {uid}</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+              style={{
+                paddingHorizontal: 12,
+                paddingVertical: 10,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: palette.border,
+                backgroundColor: palette.card,
+              }}
+            >
+              <Text style={{ color: palette.text, fontWeight: "700" }}>
+                {theme === "dark" ? "Light" : "Dark"}
+              </Text>
+            </TouchableOpacity>
           </View>
 
           <View
@@ -126,51 +171,55 @@ export default function HomeScreen() {
               gap: 12,
               alignItems: "center",
               borderWidth: 1,
-              borderColor: "#d1d5db",
+              borderColor: palette.border,
               borderRadius: 12,
               paddingHorizontal: 12,
               paddingVertical: 8,
+              backgroundColor: palette.card,
             }}
           >
             <TextInput
               placeholder="Add a task..."
               value={newTitle}
               onChangeText={setNewTitle}
-              style={{ flex: 1, paddingVertical: 6 }}
+              style={{ flex: 1, paddingVertical: 6, color: palette.text }}
               returnKeyType="done"
               onSubmitEditing={handleAddTask}
+              placeholderTextColor={theme === "dark" ? "#64748b" : "#94a3b8"}
             />
             <TouchableOpacity
               onPress={handleAddTask}
               disabled={submitting}
               style={{
-                backgroundColor: submitting ? "#9ca3af" : "#111827",
+                backgroundColor: submitting ? palette.border : palette.primary,
                 paddingHorizontal: 14,
                 paddingVertical: 8,
                 borderRadius: 10,
               }}
             >
               {submitting ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color={theme === "dark" ? "#0f172a" : "#fff"} />
               ) : (
-                <Text style={{ color: "#fff", fontWeight: "700" }}>Add</Text>
+                <Text style={{ color: theme === "dark" ? "#0f172a" : "#fff", fontWeight: "800" }}>
+                  Add
+                </Text>
               )}
             </TouchableOpacity>
           </View>
 
-          {error ? <Text style={{ color: "#b91c1c" }}>{error}</Text> : null}
+          {error ? <Text style={{ color: palette.danger }}>{error}</Text> : null}
 
           {loadingTasks ? (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
               <ActivityIndicator />
-              <Text style={{ marginTop: 8, color: "#4b5563" }}>Loading tasks...</Text>
+              <Text style={{ marginTop: 8, color: palette.muted }}>Loading tasks...</Text>
             </View>
           ) : sortedTasks.length === 0 ? (
             <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <Text style={{ fontSize: 18, fontWeight: "600", color: "#111" }}>
+              <Text style={{ fontSize: 18, fontWeight: "700", color: palette.text }}>
                 No tasks yet
               </Text>
-              <Text style={{ color: "#4b5563" }}>Add your first task to get started.</Text>
+              <Text style={{ color: palette.muted }}>Add your first task to get started.</Text>
             </View>
           ) : (
             <FlatList
@@ -181,10 +230,10 @@ export default function HomeScreen() {
                 <View
                   style={{
                     borderWidth: 1,
-                    borderColor: "#e5e7eb",
+                    borderColor: palette.border,
                     borderRadius: 12,
                     padding: 12,
-                    backgroundColor: "#f9fafb",
+                    backgroundColor: palette.card,
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "space-between",
@@ -198,25 +247,25 @@ export default function HomeScreen() {
                       height: 22,
                       borderRadius: 11,
                       borderWidth: 2,
-                      borderColor: item.done ? "#10b981" : "#9ca3af",
+                      borderColor: item.done ? palette.checkBorder : palette.muted,
                       alignItems: "center",
                       justifyContent: "center",
-                      backgroundColor: item.done ? "#d1fae5" : "#fff",
+                      backgroundColor: item.done ? palette.checkBg : palette.card,
                     }}
                   >
-                    {item.done ? <Text style={{ color: "#047857" }}>✓</Text> : null}
+                    {item.done ? <Text style={{ color: palette.text }}>✓</Text> : null}
                   </TouchableOpacity>
                   <Text
                     style={{
                       flex: 1,
-                      color: "#111",
+                      color: palette.text,
                       textDecorationLine: item.done ? "line-through" : "none",
                     }}
                   >
                     {item.title}
                   </Text>
                   <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                    <Text style={{ color: "#b91c1c", fontWeight: "700" }}>Delete</Text>
+                    <Text style={{ color: palette.danger, fontWeight: "800" }}>Delete</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -227,7 +276,7 @@ export default function HomeScreen() {
             onPress={handleSignOut}
             disabled={signingOut}
             style={{
-              backgroundColor: signingOut ? "#9ca3af" : "#b91c1c",
+              backgroundColor: signingOut ? palette.border : palette.danger,
               paddingVertical: 14,
               borderRadius: 10,
               alignItems: "center",
@@ -235,9 +284,11 @@ export default function HomeScreen() {
             }}
           >
             {signingOut ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={theme === "dark" ? "#0f172a" : "#fff"} />
             ) : (
-              <Text style={{ color: "#fff", fontWeight: "700" }}>Sign out</Text>
+              <Text style={{ color: theme === "dark" ? "#0f172a" : "#fff", fontWeight: "800" }}>
+                Sign out
+              </Text>
             )}
           </TouchableOpacity>
         </View>
