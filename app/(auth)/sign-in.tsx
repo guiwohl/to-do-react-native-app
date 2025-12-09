@@ -1,16 +1,16 @@
-import { FirebaseError } from "firebase/app";
 import { useRouter } from "expo-router";
+import { FirebaseError } from "firebase/app";
 import { useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../src/providers/auth-provider";
 
 function formatError(err: unknown) {

@@ -12,8 +12,21 @@
 - Use `listenTasks` to stream `users/{uid}/tasks` ordered by `createdAt`
 - Ensure cleanup of listeners on unmount/sign-out
 
-4) Enforce Firestore security rules
+4) Enforce Firestore security rules 
 - Add rules file (or documented snippet) restricting access to `users/{uid}/tasks` for matching `request.auth.uid`
+OBS: That task is pretty much done, ive configured in the firestore panel this:
+
+```rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {           
+    match /users/{userId}/tasks/{taskId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
 
 5) Environment & config documentation
 - Update README with Firebase setup steps and `.env` variables (`EXPO_PUBLIC_*`)
