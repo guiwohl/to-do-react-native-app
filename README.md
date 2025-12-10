@@ -1,5 +1,4 @@
 # To-Do React Native App
-# To-Do React Native App
 
 ## Firebase setup (for running locally)
 
